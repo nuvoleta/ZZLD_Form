@@ -1,0 +1,6 @@
+@ZZLD_Form.API_HostAddress = http://localhost:5114
+
+GET {{ZZLD_Form.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
