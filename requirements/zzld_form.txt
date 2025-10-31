@@ -1,0 +1,6 @@
+1.Setup a new project ZZLD_Form 
+2.Setup a new repo ZZLD_Form in the github account https://github.com/nuvoleta
+3.Follow these git practices documentation\GIT_STANDARDS.md
+4.Create guides similar to what is in documentation\samples that are tailored to this project. Store the new guides in the documentation folder
+5.Use c# to write the code
+6.Use the container https://aivideoprocessing.blob.core.windows.net/zzld-form for document storage 

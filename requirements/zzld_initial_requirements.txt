@@ -1,0 +1,35 @@
+We are building an application that is receiving as input Personal Information about an individual and then using a PDF template form to create a personalized document.
+The form is ZZLD_Form.pdf and it is in the azure blob storage
+All areas that have dots "...." are fields where Personal Data is supposed to be inserted replacing the dots
+You need to identify these areas and create input parameters that represent them
+All files stored in the Azure Blob must have unique file names
+This will be part of a bigger project
+
+=====================
+Answers Part I 
+=====================
+  1. PDF Manipulation Library: Which PDF library do you prefer for .NET? (e.g., iTextSharp/iText7, PdfSharp, or QuestPDF)?
+  A. No preference. The one that is easiest to implement
+
+  2. User Interface: Will this be:
+    - Web API only (REST endpoints)?
+    - Web application with UI (Blazor/Razor Pages/MVC)?
+    - Both API + UI?
+  A. Web API only. I will need tou to create a script (both bash and PowerShell) that I can use to test with
+
+  3. Authentication: What authentication mechanism? (Azure AD, custom auth, none for MVP)?
+  A. None for MVP
+
+  4. Storage Strategy:
+    - Should generated PDFs be stored in the same zzld-form container or a separate one?
+    - Retention policy for generated documents?
+    A. yes, in the same container. Retention policy is not important for the MVP
+
+  5. Form Template: Is the PDF template already in blob storage, or do we need to upload it?
+  A. Yes, the template is already in the blob storage
+
+  6. Validation: Any specific validation rules for the personal data fields?
+  A. Date fields have tobe in Bulgarian date format. Text needs to be in Bulgarian.
+
+  7. Deployment Target: Azure App Service, Azure Functions, or Container Apps?
+  A. The easiest option for MVP
