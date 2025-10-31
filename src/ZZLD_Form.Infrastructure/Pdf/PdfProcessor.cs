@@ -2,6 +2,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using ZZLD_Form.Core.Models;
+using ZZLD_Form.Core.Services;
 using ZZLD_Form.Shared.Constants;
 
 namespace ZZLD_Form.Infrastructure.Pdf;

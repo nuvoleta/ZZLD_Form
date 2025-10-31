@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ZZLD_Form.Core\ZZLD_Form.Core.csproj" />
+    <ProjectReference Include="..\..\src\ZZLD_Form.Infrastructure\ZZLD_Form.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\ZZLD_Form.Shared\ZZLD_Form.Shared.csproj" />
   </ItemGroup>
 

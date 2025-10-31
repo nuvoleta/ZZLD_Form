@@ -240,15 +240,3 @@ public class FormServiceTests
         };
     }
 }
-
-// These interfaces need to be in Infrastructure but referenced here for testing
-public interface IPdfProcessor
-{
-    Task<byte[]> GeneratePdfAsync(PersonalData personalData, string templatePath, CancellationToken cancellationToken = default);
-}
-
-public interface IBlobStorageService
-{
-    Task<(string BlobName, string DownloadUrl, DateTime ExpiresAt)> UploadFormAsync(byte[] pdfBytes, FormMetadata metadata, CancellationToken cancellationToken = default);
-    Task<(string BlobName, string DownloadUrl, DateTime ExpiresAt, FormMetadata Metadata)> GetFormByIdAsync(string formId, CancellationToken cancellationToken = default);
-}

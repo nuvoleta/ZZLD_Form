@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using ZZLD_Form.Infrastructure.Storage;
+using ZZLD_Form.Core.Services;
 using ZZLD_Form.Shared.DTOs;
 
 namespace ZZLD_Form.E2ETests;

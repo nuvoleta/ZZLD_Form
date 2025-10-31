@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Retry;
 using System.Text.Json;
+using ZZLD_Form.Core.Services;
 using ZZLD_Form.Infrastructure.Configuration;
 using ZZLD_Form.Shared.Constants;
 using ZZLD_Form.Shared.DTOs;
@@ -127,10 +128,10 @@ public class BlobStorageService : IBlobStorageService
                     var metadata = new FormMetadata
                     {
                         FormId = formId,
-                        FullName = blobItem.Metadata.GetValueOrDefault("FullName", string.Empty),
-                        GeneratedAt = DateTime.Parse(blobItem.Metadata.GetValueOrDefault("GeneratedAt", DateTime.UtcNow.ToString("O"))),
-                        EGN = blobItem.Metadata.GetValueOrDefault("EGN", string.Empty),
-                        Email = blobItem.Metadata.GetValueOrDefault("Email", string.Empty)
+                        FullName = blobItem.Metadata.TryGetValue("FullName", out var fullName) ? fullName : string.Empty,
+                        GeneratedAt = DateTime.Parse(blobItem.Metadata.TryGetValue("GeneratedAt", out var generatedAt) ? generatedAt : DateTime.UtcNow.ToString("O")),
+                        EGN = blobItem.Metadata.TryGetValue("EGN", out var egn) ? egn : string.Empty,
+                        Email = blobItem.Metadata.TryGetValue("Email", out var email) ? email : string.Empty
                     };
 
                     var downloadUrl = await GenerateSasTokenAsync(blobItem.Name, _options.SasTokenValidityHours);
@@ -145,7 +146,7 @@ public class BlobStorageService : IBlobStorageService
     }
 
     /// <inheritdoc/>
-    public async Task<string> GenerateSasTokenAsync(string blobName, int expiryHours = 24)
+    public Task<string> GenerateSasTokenAsync(string blobName, int expiryHours = 24)
     {
         if (string.IsNullOrWhiteSpace(blobName))
             throw new ArgumentException("Blob name cannot be null or empty", nameof(blobName));
@@ -156,7 +157,7 @@ public class BlobStorageService : IBlobStorageService
         if (_options.UseManagedIdentity)
         {
             // For managed identity, return blob URL without SAS (requires appropriate RBAC permissions)
-            return blobClient.Uri.ToString();
+            return Task.FromResult(blobClient.Uri.ToString());
         }
 
         // Generate SAS token
@@ -172,7 +173,7 @@ public class BlobStorageService : IBlobStorageService
         sasBuilder.SetPermissions(BlobSasPermissions.Read);
 
         var sasToken = blobClient.GenerateSasUri(sasBuilder);
-        return sasToken.ToString();
+        return Task.FromResult(sasToken.ToString());
     }
 
     /// <inheritdoc/>

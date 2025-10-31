@@ -5,8 +5,8 @@ using ZZLD_Form.Core.Models;
 using ZZLD_Form.Core.Services;
 using ZZLD_Form.Core.Validators;
 using ZZLD_Form.Infrastructure.Configuration;
-using ZZLD_Form.Infrastructure.Pdf;
-using ZZLD_Form.Infrastructure.Storage;
+using PdfImpl = ZZLD_Form.Infrastructure.Pdf;
+using StorageImpl = ZZLD_Form.Infrastructure.Storage;
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
@@ -51,8 +51,8 @@ try
     // Register services
     builder.Services.AddScoped<IFormService, FormService>();
     builder.Services.AddScoped<ITemplateService, TemplateService>();
-    builder.Services.AddScoped<IPdfProcessor, PdfProcessor>();
-    builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
+    builder.Services.AddScoped<IPdfProcessor, PdfImpl.PdfProcessor>();
+    builder.Services.AddScoped<IBlobStorageService, StorageImpl.BlobStorageService>();
 
     // Add CORS
     builder.Services.AddCors(options =>

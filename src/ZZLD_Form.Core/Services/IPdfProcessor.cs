@@ -1,6 +1,6 @@
 using ZZLD_Form.Core.Models;
 
-namespace ZZLD_Form.Infrastructure.Pdf;
+namespace ZZLD_Form.Core.Services;
 
 /// <summary>
 /// Service for PDF generation and processing

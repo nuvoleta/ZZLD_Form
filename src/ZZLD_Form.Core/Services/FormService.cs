@@ -144,35 +144,3 @@ public class FormService : IFormService
         return $"{DateTime.UtcNow:yyyyMMddHHmmss}_{Guid.NewGuid():N}";
     }
 }
-
-/// <summary>
-/// Interface for PDF processing
-/// </summary>
-public interface IPdfProcessor
-{
-    /// <summary>
-    /// Generates a PDF from personal data
-    /// </summary>
-    Task<byte[]> GeneratePdfAsync(PersonalData personalData, string templatePath, CancellationToken cancellationToken = default);
-}
-
-/// <summary>
-/// Interface for blob storage operations
-/// </summary>
-public interface IBlobStorageService
-{
-    /// <summary>
-    /// Uploads a form to blob storage
-    /// </summary>
-    Task<(string BlobName, string DownloadUrl, DateTime ExpiresAt)> UploadFormAsync(
-        byte[] pdfBytes,
-        FormMetadata metadata,
-        CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Retrieves a form by its ID
-    /// </summary>
-    Task<(string BlobName, string DownloadUrl, DateTime ExpiresAt, FormMetadata Metadata)> GetFormByIdAsync(
-        string formId,
-        CancellationToken cancellationToken = default);
-}

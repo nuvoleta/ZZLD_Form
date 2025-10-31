@@ -1,6 +1,6 @@
 using ZZLD_Form.Shared.DTOs;
 
-namespace ZZLD_Form.Infrastructure.Storage;
+namespace ZZLD_Form.Core.Services;
 
 /// <summary>
 /// Service for Azure Blob Storage operations
