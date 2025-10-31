@@ -61,7 +61,7 @@ public class FormService : IFormService
                 FullName = personalData.GetFullName(),
                 GeneratedAt = DateTime.UtcNow,
                 EGN = personalData.EGN,
-                Email = personalData.Email
+                Email = ""
             };
 
             // Upload to blob storage
@@ -127,15 +127,16 @@ public class FormService : IFormService
             MiddleName = request.MiddleName,
             LastName = request.LastName,
             EGN = request.EGN,
-            DateOfBirth = request.DateOfBirth,
-            Address = request.Address,
             City = request.City,
             PostalCode = request.PostalCode,
-            PhoneNumber = request.PhoneNumber,
-            Email = request.Email,
-            DocumentNumber = request.DocumentNumber,
-            DocumentIssueDate = request.DocumentIssueDate,
-            DocumentIssuedBy = request.DocumentIssuedBy
+            Community = request.Community,
+            Street = request.Street,
+            Number = request.Number,
+            Block = request.Block,
+            Entrance = request.Entrance,
+            Floor = request.Floor,
+            Apartment = request.Apartment,
+            PhoneNumber = request.PhoneNumber
         };
     }
 

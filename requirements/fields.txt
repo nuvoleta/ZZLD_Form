@@ -1,0 +1,17 @@
+Format is :  Field \Field name in English\  - Coordinates Y, X
+----------------------------------------------------
+1. Име \firstName\ - 640, 90
+Презиме \middleName\ - 640, 250
+Фамилия \lastName\ - 640, 425
+2. ЕГН \egn\ - 618, 110
+3. гр.(с) \city\      - 605, 125
+\postalCode\  - 605, 425
+4. ж.к. \community\ - 592, 110 
+5. ул. \street\ - 592, 207
+6. N \number\ - 592, 325 
+7. бл. \block\ - 592, 362
+8. вх. \entrance\ - 592, 460
+9. ет. \floor\ - 592, 510
+10. ап. \appartment\ - 580, 110
+11. тел. \phoneNumber\ - 580, 160
+    

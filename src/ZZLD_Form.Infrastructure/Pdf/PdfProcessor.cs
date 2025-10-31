@@ -1,26 +1,24 @@
-using QuestPDF.Fluent;
-using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas;
+using iText.Kernel.Font;
+using iText.IO.Font.Constants;
+using iText.Kernel.Colors;
 using ZZLD_Form.Core.Models;
 using ZZLD_Form.Core.Services;
 using ZZLD_Form.Shared.Constants;
+using Microsoft.Extensions.Logging;
 
 namespace ZZLD_Form.Infrastructure.Pdf;
 
-/// <summary>
-/// PDF processor implementation using QuestPDF
-/// Generates ZZLD forms with Bulgarian Cyrillic support
-/// </summary>
 public class PdfProcessor : IPdfProcessor
 {
-    static PdfProcessor()
-    {
-        // Configure QuestPDF license (Community license for non-commercial use)
-        QuestPDF.Settings.License = LicenseType.Community;
-    }
+    private readonly ILogger<PdfProcessor>? _logger;
 
-    /// <inheritdoc/>
-    public Task<byte[]> GeneratePdfAsync(
+    public PdfProcessor(ILogger<PdfProcessor>? logger = null)
+    {
+        _logger = logger;
+    }
+    public async Task<byte[]> GeneratePdfAsync(
         PersonalData personalData,
         string templatePath,
         CancellationToken cancellationToken = default)
@@ -28,105 +26,56 @@ public class PdfProcessor : IPdfProcessor
         if (personalData == null)
             throw new ArgumentNullException(nameof(personalData));
 
-        return Task.Run(() =>
+        if (string.IsNullOrWhiteSpace(templatePath) || !File.Exists(templatePath))
+            throw new FileNotFoundException($"Template file not found at: {templatePath}");
+
+        return await Task.Run(() =>
         {
-            var pdfBytes = Document.Create(container =>
+            try
             {
-                container.Page(page =>
+                var outputStream = new MemoryStream();
+                
+                using (var reader = new PdfReader(templatePath))
+                using (var writer = new PdfWriter(outputStream))
                 {
-                    page.Size(PageSizes.A4);
-                    page.Margin(2, Unit.Centimetre);
-                    page.DefaultTextStyle(x => x.FontSize(11).FontFamily("Arial"));
-
-                    page.Header()
-                        .AlignCenter()
-                        .Text("ДЕКЛАРАЦИЯ ПО ЗЗЛД")
-                        .FontSize(16)
-                        .Bold();
-
-                    page.Content()
-                        .PaddingVertical(1, Unit.Centimetre)
-                        .Column(column =>
-                        {
-                            column.Spacing(15);
-
-                            // Personal Information Section
-                            AddSection(column, "ЛИЧНИ ДАННИ");
-                            
-                            AddField(column, "Име:", personalData.FirstName);
-                            AddField(column, "Презиме:", personalData.MiddleName);
-                            AddField(column, "Фамилия:", personalData.LastName);
-                            AddField(column, "ЕГН:", personalData.EGN);
-                            AddField(column, "Дата на раждане:", personalData.DateOfBirth.ToString(FormConstants.BulgarianDateFormat));
-
-                            // Contact Information Section
-                            AddSection(column, "АДРЕС И КОНТАКТИ");
-                            
-                            AddField(column, "Адрес:", personalData.Address);
-                            AddField(column, "Град:", personalData.City);
-                            AddField(column, "Пощенски код:", personalData.PostalCode);
-                            AddField(column, "Телефон:", personalData.PhoneNumber);
-                            AddField(column, "Email:", personalData.Email);
-
-                            // Document Information Section
-                            AddSection(column, "ДАННИ ЗА ДОКУМЕНТ");
-                            
-                            AddField(column, "Номер на документ:", personalData.DocumentNumber);
-                            AddField(column, "Дата на издаване:", personalData.DocumentIssueDate.ToString(FormConstants.BulgarianDateFormat));
-                            AddField(column, "Издаден от:", personalData.DocumentIssuedBy);
-
-                            // Declaration Text
-                            column.Item().PaddingTop(20).Text(text =>
-                            {
-                                text.Span("Декларирам, че съм запознат/а с разпоредбите на Закона за защита на личните данни (ЗЗЛД) и давам съгласието си личните ми данни да бъдат обработвани за целите на административното обслужване.")
-                                    .FontSize(10);
-                            });
-
-                            // Signature Section
-                            column.Item().PaddingTop(30).Row(row =>
-                            {
-                                row.RelativeItem().Column(col =>
-                                {
-                                    col.Item().Text($"Дата: {DateTime.Now.ToString(FormConstants.BulgarianDateFormat)}");
-                                });
-
-                                row.RelativeItem().Column(col =>
-                                {
-                                    col.Item().AlignRight().Text("_____________________");
-                                    col.Item().AlignRight().Text("(подпис)").FontSize(9);
-                                });
-                            });
-                        });
-
-                    page.Footer()
-                        .AlignCenter()
-                        .Text(text =>
-                        {
-                            text.Span($"Генериран на: {DateTime.Now.ToString(FormConstants.BulgarianDateFormat)} {DateTime.Now:HH:mm}")
-                                .FontSize(8)
-                                .Italic();
-                        });
-                });
-            }).GeneratePdf();
-
-            return pdfBytes;
+                    writer.SetCloseStream(false);
+                    
+                    using (var pdfDoc = new PdfDocument(reader, writer))
+                    {
+                        var page = pdfDoc.GetPage(1);
+                        var pageSize = page.GetPageSize();
+                        
+                        var canvas = new PdfCanvas(page);
+                        
+                        string fontPath = "/mnt/c/Windows/Fonts/arialbd.ttf";
+                        var font = PdfFontFactory.CreateFont(fontPath, iText.IO.Font.PdfEncodings.IDENTITY_H, PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED);
+                        
+                        canvas.SetFillColor(ColorConstants.BLACK);
+                        float fontSize = 10f;
+                        
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(90, 640).ShowText(personalData.FirstName).EndText();
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(250, 640).ShowText(personalData.MiddleName).EndText();
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(425, 640).ShowText(personalData.LastName).EndText();
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(110, 618).ShowText(personalData.EGN).EndText();
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(125, 605).ShowText(personalData.City).EndText();
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(425, 605).ShowText(personalData.PostalCode).EndText();
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(110, 592).ShowText(personalData.Community).EndText();
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(207, 592).ShowText(personalData.Street).EndText();
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(325, 592).ShowText(personalData.Number).EndText();
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(362, 592).ShowText(personalData.Block).EndText();
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(460, 592).ShowText(personalData.Entrance).EndText();
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(510, 592).ShowText(personalData.Floor).EndText();
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(110, 580).ShowText(personalData.Apartment).EndText();
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(160, 580).ShowText(personalData.PhoneNumber).EndText();
+                    }
+                }
+                
+                return outputStream.ToArray();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to process PDF: {ex.GetType().Name} - {ex.Message}", ex);
+            }
         }, cancellationToken);
-    }
-
-    private static void AddSection(ColumnDescriptor column, string title)
-    {
-        column.Item().PaddingTop(10).Text(title)
-            .Bold()
-            .FontSize(12)
-            .Underline();
-    }
-
-    private static void AddField(ColumnDescriptor column, string label, string value)
-    {
-        column.Item().Row(row =>
-        {
-            row.ConstantItem(150).Text(label).Bold();
-            row.RelativeItem().Text(value ?? string.Empty);
-        });
     }
 }
