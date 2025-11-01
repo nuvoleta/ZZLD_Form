@@ -200,6 +200,8 @@ ZZLD_Form/
 <PackageReference Include="Azure.Identity" Version="1.*" />
 <PackageReference Include="FluentValidation.AspNetCore" Version="11.*" />
 <PackageReference Include="Polly" Version="8.*" />
+<PackageReference Include="itext" Version="9.3.0" />
+<PackageReference Include="itext7.bouncy-castle-adapter" Version="9.3.0" />
 
 <!-- Testing packages -->
 <PackageReference Include="xUnit" Version="2.*" />
@@ -208,12 +210,49 @@ ZZLD_Form/
 <PackageReference Include="coverlet.collector" Version="6.*" />
 ```
 
+## PDF Generation
+
+### iText7 Implementation
+- **Library**: iText7 9.3.0 for filling existing PDF templates
+- **Approach**: Load existing PDF template and overlay text at precise coordinates
+- **Font**: Arial Bold TrueType (`/mnt/c/Windows/Fonts/arialbd.ttf`) with IDENTITY_H encoding
+- **Cyrillic Support**: TrueType fonts required for Bulgarian text (standard PDF fonts don't support Cyrillic)
+- **Template Location**: `templates/ZZLD_Form.pdf`
+- **Field Coordinates**: Defined in `requirements/fields.txt` (Y, X coordinates)
+
+### PersonalData Model Fields
+```csharp
+public class PersonalData
+{
+    public string FirstName { get; set; }
+    public string MiddleName { get; set; }
+    public string LastName { get; set; }
+    public string EGN { get; set; }
+    public string City { get; set; }
+    public string PostalCode { get; set; }
+    public string Community { get; set; }  // ж.к.
+    public string Street { get; set; }      // ул.
+    public string Number { get; set; }      // N
+    public string Block { get; set; }       // бл.
+    public string Entrance { get; set; }    // вх.
+    public string Floor { get; set; }       // ет.
+    public string Apartment { get; set; }   // ап.
+    public string PhoneNumber { get; set; } // тел.
+}
+```
+
+### Field Positioning
+- Each field has fixed Y,X coordinates on the PDF template
+- Font size: 10pt, black, bold
+- Coordinates reference the bottom-left corner of the text
+- See `requirements/fields.txt` for complete coordinate mapping
+
 ## Important Notes
 
-- This is a new project setup - no code has been written yet
-- Target .NET 6.0 or later
+- Target .NET 8.0
 - Follow C# best practices and .NET conventions
 - Use Azurite for local Azure Storage testing
 - Maintain 85% test coverage from the start
 - Never commit secrets or API keys to the repository
 - All development follows TDD methodology
+- PDF generation fills existing template rather than creating new documents

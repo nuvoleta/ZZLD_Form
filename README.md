@@ -4,13 +4,14 @@ A .NET 8 Web API for generating ZZLD (Personal Data Protection Law) declaration 
 
 ## Features
 
-- Generate PDF forms with Bulgarian Cyrillic support
+- Fill existing PDF templates with Bulgarian Cyrillic support using iText7
 - FluentValidation for input validation (EGN 10 digits, postal code 4 digits)
 - Azure Blob Storage integration with SAS token generation
 - Retry logic using Polly for resilient storage operations
 - Comprehensive logging with Serilog
 - Full test coverage (Unit, Integration, E2E)
 - OpenAPI/Swagger documentation
+- Precise coordinate-based field positioning for 14 form fields
 
 ## Project Structure
 
@@ -31,6 +32,8 @@ ZZLD_Form/
 
 - .NET 8.0 SDK or later
 - Azure Storage Account (or Azure Storage Emulator for development)
+- Arial Bold font (`/mnt/c/Windows/Fonts/arialbd.ttf` for Cyrillic support)
+- PDF template file (`templates/ZZLD_Form.pdf`)
 
 ## Configuration
 
@@ -137,15 +140,16 @@ Content-Type: application/json
   "middleName": "Петров",
   "lastName": "Иванов",
   "egn": "1234567890",
-  "dateOfBirth": "1990-05-15",
-  "address": "ул. Витоша 10",
   "city": "София",
   "postalCode": "1000",
-  "phoneNumber": "+359888123456",
-  "email": "ivan.ivanov@example.com",
-  "documentNumber": "123456789",
-  "documentIssueDate": "2020-01-01",
-  "documentIssuedBy": "МВР София"
+  "community": "Лозенец",
+  "street": "Витоша",
+  "number": "10",
+  "block": "5",
+  "entrance": "A",
+  "floor": "3",
+  "apartment": "12",
+  "phoneNumber": "+359888123456"
 }
 ```
 
@@ -214,32 +218,34 @@ For production, it's recommended to use Managed Identity:
 
 ### Personal Data
 - First Name: Required
+- Middle Name: Optional
 - Last Name: Required
 - EGN: Required, exactly 10 digits
-- Date of Birth: Must be in the past, not more than 150 years ago
-- Address: Required
 - City: Required
 - Postal Code: Required, exactly 4 digits
-- Email: Required, valid email format
-- Document Number: Required
-- Document Issue Date: Cannot be in the future
-- Document Issued By: Required
+- Community: Optional
+- Street: Optional
+- Number: Optional
+- Block: Optional
+- Entrance: Optional
+- Floor: Optional
+- Apartment: Optional
+- Phone Number: Optional
 
 ## PDF Format
 
-Generated PDFs include:
-- Bulgarian Cyrillic support
-- Date format: dd.MM.yyyy (Bulgarian standard)
-- Personal information section
-- Address and contact details
-- Document information
-- Declaration text (ZZLD compliance)
-- Signature section with generation timestamp
+PDF generation uses iText7 to fill an existing template:
+- **Library**: iText7 9.3.0 with bouncy-castle-adapter
+- **Approach**: Overlay text on existing PDF template at precise coordinates
+- **Font**: Arial Bold TrueType with IDENTITY_H encoding for Cyrillic support
+- **Template**: `templates/ZZLD_Form.pdf` (original Bulgarian form)
+- **Fields**: 14 personal data fields positioned per `requirements/fields.txt`
+- **Output**: PDF with filled data matching original form layout
 
 ## Troubleshooting
 
-### QuestPDF License Error
-If you encounter a QuestPDF license error, the Community license is configured for non-commercial use. For commercial use, obtain a license from QuestPDF.
+### Font Not Found Error
+If you encounter "font file not found" errors, ensure Arial Bold font is available at `/mnt/c/Windows/Fonts/arialbd.ttf` (WSL path) or update the font path in `PdfProcessor.cs` to match your system.
 
 ### Azure Storage Connection Issues
 - Verify connection string is correct
