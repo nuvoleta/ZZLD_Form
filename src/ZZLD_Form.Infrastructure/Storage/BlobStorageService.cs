@@ -77,7 +77,7 @@ public class BlobStorageService : IBlobStorageService
             var blobMetadata = new Dictionary<string, string>
             {
                 ["FormId"] = metadata.FormId,
-                ["FullName"] = metadata.FullName,
+                ["FullName"] = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(metadata.FullName)),
                 ["GeneratedAt"] = metadata.GeneratedAt.ToString("O"),
                 ["EGN"] = metadata.EGN,
                 ["Email"] = metadata.Email
