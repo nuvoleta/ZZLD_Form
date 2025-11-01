@@ -136,7 +136,13 @@ public class FormService : IFormService
             Entrance = request.Entrance,
             Floor = request.Floor,
             Apartment = request.Apartment,
-            PhoneNumber = request.PhoneNumber
+            PhoneNumber = request.PhoneNumber,
+            Address = request.Address,
+            Email = request.Email,
+            DateOfBirth = request.DateOfBirth,
+            DocumentNumber = request.DocumentNumber,
+            DocumentIssueDate = request.DocumentIssueDate,
+            DocumentIssuedBy = request.DocumentIssuedBy
         };
     }
 

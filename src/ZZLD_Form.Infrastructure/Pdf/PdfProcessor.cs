@@ -7,6 +7,7 @@ using ZZLD_Form.Core.Models;
 using ZZLD_Form.Core.Services;
 using ZZLD_Form.Shared.Constants;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 namespace ZZLD_Form.Infrastructure.Pdf;
 
@@ -47,26 +48,35 @@ public class PdfProcessor : IPdfProcessor
                         
                         var canvas = new PdfCanvas(page);
                         
-                        string fontPath = "/mnt/c/Windows/Fonts/arialbd.ttf";
+                        //string fontPath = "/mnt/c/Windows/Fonts/arialbd.ttf";
+                        //string fontPath = "/Windows/Fonts/arialbd.ttf";
+                        string fontPath = "/Windows/Fonts/verdana.ttf";
                         var font = PdfFontFactory.CreateFont(fontPath, iText.IO.Font.PdfEncodings.IDENTITY_H, PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED);
-                        
+                        string fontPathBold = "/Windows/Fonts/verdanab.ttf";
+                        var fontBold = PdfFontFactory.CreateFont(fontPathBold, iText.IO.Font.PdfEncodings.IDENTITY_H, PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED);
+                        string fontPathItalic = "/Windows/Fonts/verdanai.ttf";
+                        var fontItalic = PdfFontFactory.CreateFont(fontPathItalic, iText.IO.Font.PdfEncodings.IDENTITY_H, PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED);
+
                         canvas.SetFillColor(ColorConstants.BLACK);
                         float fontSize = 10f;
-                        
-                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(90, 640).ShowText(personalData.FirstName).EndText();
-                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(250, 640).ShowText(personalData.MiddleName).EndText();
-                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(425, 640).ShowText(personalData.LastName).EndText();
-                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(110, 618).ShowText(personalData.EGN).EndText();
-                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(125, 605).ShowText(personalData.City).EndText();
-                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(425, 605).ShowText(personalData.PostalCode).EndText();
-                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(110, 592).ShowText(personalData.Community).EndText();
-                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(207, 592).ShowText(personalData.Street).EndText();
-                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(325, 592).ShowText(personalData.Number).EndText();
-                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(362, 592).ShowText(personalData.Block).EndText();
-                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(460, 592).ShowText(personalData.Entrance).EndText();
-                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(510, 592).ShowText(personalData.Floor).EndText();
-                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(110, 580).ShowText(personalData.Apartment).EndText();
-                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(160, 580).ShowText(personalData.PhoneNumber).EndText();
+                        int lineHeight = 16;
+                        int lineX = 85;
+                        int lineY = 654;
+
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(lineX, lineY).ShowText("Äîëóïîäïèñàíèÿò/àòà").EndText();
+                        lineY -= lineHeight;
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(lineX, lineY - 2).ShowText("…………………………………………………………………………………………………………………………………………………").EndText();
+                        canvas.BeginText().SetFontAndSize(fontBold, fontSize).MoveText(lineX, lineY).ShowText(personalData.GetFullName()).EndText();
+                        lineY -= lineHeight;
+                        canvas.BeginText().SetFontAndSize(fontItalic, fontSize).MoveText(lineX, lineY).ShowText("(òðèòå èìåíà ïî äîêóìåíò çà ñàìîëè÷íîñò)").EndText();
+                        lineY -= lineHeight;
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(lineX, lineY).ShowText($"ÅÃÍ: {personalData.EGN}").EndText();
+                        lineY -= lineHeight;
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(lineX, lineY).ShowText($"Àäðåñ: {personalData.GetFullAddress()}").EndText();
+                        lineY -= lineHeight;
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(lineX, lineY).ShowText($"Òåëåôîí: {personalData.PhoneNumber}").EndText();
+
+                        canvas.BeginText().SetFontAndSize(font, fontSize).MoveText(lineX + 35, 227).ShowText(DateTime.Today.ToString("d MMMM yyyy ã.", new CultureInfo("bg-BG"))).EndText();
                     }
                 }
                 

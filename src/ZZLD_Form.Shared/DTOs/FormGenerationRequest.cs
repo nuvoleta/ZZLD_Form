@@ -16,4 +16,12 @@ public class FormGenerationRequest
     public string Floor { get; set; } = string.Empty;
     public string Apartment { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
+
+    public string Address { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+
+    public DateTime? DateOfBirth { get; set; } = null;
+    public string DocumentNumber { get; set; } = string.Empty;
+    public DateTime? DocumentIssueDate { get; set; } = null;
+    public string DocumentIssuedBy { get; set; } = string.Empty;
 }
